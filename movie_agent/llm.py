@@ -10,6 +10,7 @@ docs if a default stops working).
 from __future__ import annotations
 
 import os
+import time
 from dataclasses import dataclass
 
 PROVIDERS: dict[str, dict[str, str | None]] = {
@@ -39,8 +40,13 @@ class LLMClient:
         kwargs = {"model": self.model, "messages": messages, "temperature": self.temperature}
         if tools:
             kwargs.update(tools=tools, tool_choice="auto")
-        response = self.client.chat.completions.create(**kwargs)
-        return response.choices[0].message
+        for attempt in range(3):  # retry transient errors (rate limits, occasional bad tool-call output)
+            try:
+                return self.client.chat.completions.create(**kwargs).choices[0].message
+            except Exception:
+                if attempt == 2:
+                    raise
+                time.sleep(2 * (attempt + 1))
 
 
 def detect_provider() -> str | None:

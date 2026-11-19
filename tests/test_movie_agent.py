@@ -133,6 +133,20 @@ def test_agent_tool_loop_with_fake_llm(tools):
     assert groundedness(resp, tools.df["title"].tolist()) == 1.0
 
 
+class BrokenLLM:
+    def chat(self, messages, tools=None):
+        raise RuntimeError("rate limited")
+
+
+def test_llm_failure_is_reported_not_raised(tools):
+    agent = MovieAgent(tools, llm=BrokenLLM())
+    resp = agent.ask("Something like Toy Story?")
+    assert "failed to respond" in resp.answer and "rate limited" in resp.answer
+    assert [m["role"] for m in agent.messages] == ["system"]  # broken turn removed
+    agent.llm = FakeLLM()
+    assert agent.ask("Something like Toy Story?").answer == "You might enjoy Toy Story 2."
+
+
 def test_titles_mentioned_and_retrieval_metrics(tools):
     titles = tools.df["title"].tolist()
     assert titles_mentioned("Try Toy Story 2 or Jaws!", titles) == ["Toy Story 2", "Jaws"]

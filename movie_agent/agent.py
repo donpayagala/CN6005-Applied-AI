@@ -74,7 +74,15 @@ class MovieAgent:
         if self.llm is None:
             answer, steps = self._fallback(question), 1
         else:
-            answer, steps = self._run_loop(question)
+            try:
+                answer, steps = self._run_loop(question)
+            except Exception as exc:  # API down, rate limit, malformed tool call...
+                # Drop the half-finished turn so the conversation stays valid for the next question.
+                while len(self.messages) > 1 and self.messages[-1]["role"] != "user":
+                    self.messages.pop()
+                if len(self.messages) > 1:
+                    self.messages.pop()
+                answer, steps = f"Sorry, the language model failed to respond ({type(exc).__name__}: {exc}).", 0
         calls = [{"tool": e["tool"], "args": e["args"]} for e in self.tools.log[log_start:]]
         return AgentResponse(answer=answer, tool_calls=calls,
                              sources=self.tools.returned_titles(since=log_start),
