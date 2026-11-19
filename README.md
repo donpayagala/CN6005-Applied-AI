@@ -15,25 +15,48 @@ Three end-to-end AI projects built for the **CN6005 Artificial Intelligence** mo
 
 ## Results
 
-<!-- Fill in after running the notebooks (numbers are printed in each notebook's summary cell). -->
+All results come from the notebooks run end-to-end on a Google Colab T4 GPU (seed 42). Every figure is in [`screenshots/`](screenshots/).
 
-| Task 1 — test set | Accuracy | Macro F1 | Macro ROC-AUC | Parameters |
-|---|---|---|---|---|
-| ANN | _TBD_ | _TBD_ | _TBD_ | 12.6 M |
-| CNN (regularised) | _TBD_ | _TBD_ | _TBD_ | 1.2 M |
-| MobileNetV2 (transfer learning) | _TBD_ | _TBD_ | _TBD_ | 2.3 M |
+### Task 1 — Waste image classification (379 held-out test images)
 
-| Task 2 — K-Means, K chosen by silhouette | ARI | NMI | Purity | Silhouette |
-|---|---|---|---|---|
-| TF-IDF | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Sentence-BERT MiniLM | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
-| Sentence-BERT MPNet | _TBD_ | _TBD_ | _TBD_ | _TBD_ |
+| Model | Accuracy | Macro F1 | Macro ROC-AUC | Parameters | Size |
+|---|---|---|---|---|---|
+| ANN (dense on raw pixels) | 53.3% | 0.503 | 0.856 | 12.63 M | 50.5 MB |
+| Baseline CNN (no regularisation) | 64.4% | 0.612 | 0.872 | 6.52 M | 26.1 MB |
+| **CNN (regularised)** | **69.4%** | **0.673** | **0.929** | **1.21 M** | **4.8 MB** |
+| MobileNetV2 (transfer learning) | **80.5%** | **0.801** | **0.971** | 2.27 M | 9.1 MB |
 
-| Task 3 — agent | Value |
-|---|---|
-| Retrieval Hit@5 (hybrid, 20 queries) | _TBD_ |
-| Scenario tests passed | _TBD_ / 7 |
-| Groundedness (recommended titles found in tool results) | _TBD_ |
+- The CNN beats the ANN by **+16.1 points** of accuracy with **10× fewer parameters**.
+- **Overfitting fixed:** the baseline CNN hit 100% train vs 64.4% validation accuracy (35.6-point gap); augmentation, batch-norm, dropout, global average pooling and early stopping cut the gap to **2.1 points**.
+- Transfer learning adds another **+11 points**; the hardest class for the CNN is *glass* (transparent, confused with plastic).
+
+<p align="center"><img src="screenshots/task1/15_model_comparison.png" width="90%"><br><img src="screenshots/task1/16_gradcam.png" width="90%"><br><em>Model comparison and Grad-CAM: the CNN focuses on the object, not the background.</em></p>
+
+### Task 2 — Topic discovery in 2,125 BBC News articles
+
+| Representation | ARI | NMI | Purity | Silhouette | Stability |
+|---|---|---|---|---|---|
+| TF-IDF + K-Means | **0.841** | 0.846 | 0.963 | 0.033 | 0.688 |
+| Sentence-BERT MiniLM + K-Means | 0.823 | 0.842 | 0.961 | 0.113 | **0.830** |
+| **Sentence-BERT MPNet + K-Means** | 0.840 | **0.860** | **0.968** | **0.141** | 0.779 |
+
+- Without seeing any labels, all methods recover the 5 BBC sections with **> 96% purity**.
+- The silhouette score chose **K = 6**: both methods split *sport* — TF-IDF into rugby / Six Nations vs other sport, MPNet into **team vs individual sports** (tennis, athletics).
+- Silhouette suggests a big gap (0.14 vs 0.03), but external metrics show the methods are really close — **why external validation matters**. Recommended: MPNet clusters, labelled with TF-IDF terms.
+
+<p align="center"><img src="screenshots/task2/14_tsne_MPNet.png" width="90%"><br><em>t-SNE of MPNet embeddings: discovered clusters (left) vs hidden BBC sections (right).</em></p>
+
+### Task 3 — CineGuide agent: retrieval quality (20 description-only queries)
+
+| Search mode | Hit@1 | Hit@5 | MRR |
+|---|---|---|---|
+| Lexical (TF-IDF) | 0.60 | 0.90 | 0.729 |
+| Semantic (Sentence-BERT) | 0.75 | **1.00** | 0.839 |
+| **Hybrid (α = 0.4)** | **0.90** | 0.95 | **0.913** |
+
+Hybrid search finds the right film first **90%** of the time, vs 60% for keywords alone and 75% for embeddings alone.
+
+<p align="center"><img src="screenshots/task3/01_architecture.png" width="85%"></p>
 
 ## Highlights
 
