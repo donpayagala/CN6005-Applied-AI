@@ -1,0 +1,29 @@
+# CN6005 Applied AI - all libraries used in the three notebooks
+# Install with:  pip install -r requirements.txt      (Python 3.10 - 3.12 recommended)
+
+# --- core / data
+numpy>=1.26
+pandas>=2.1
+matplotlib>=3.8
+seaborn>=0.13
+scikit-learn>=1.4
+pillow>=10.0
+kagglehub>=0.3          # dataset download (needs a free Kaggle account / API token)
+jupyter>=1.0
+
+# --- Task 1: deep learning
+tensorflow>=2.16
+
+# --- Task 2: NLP
+nltk>=3.8.2
+wordcloud>=1.9
+sentence-transformers>=3.0
+torch>=2.2
+
+# --- Task 3: AI agent
+openai>=1.40            # OpenAI-compatible client used for Groq / Gemini / Claude / OpenAI / Ollama
+python-dotenv>=1.0
+streamlit>=1.36
+
+# --- tests
+pytest>=8.0

@@ -1,0 +1,22 @@
+Datasets used (all public, downloaded automatically with kagglehub)
+===================================================================
+
+Task 1 - Image classification
+  Garbage Classification (6 classes, ~2,500 images; derived from TrashNet, Yang & Thung 2016)
+  https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification
+  kagglehub id: asdasdasasdas/garbage-classification
+
+Task 2 - Text mining and clustering
+  BBC Full Text Document Classification (2,225 news articles, 5 sections; Greene & Cunningham 2006)
+  https://www.kaggle.com/datasets/shivamkushwaha/bbc-full-text-document-classification
+  kagglehub id: shivamkushwaha/bbc-full-text-document-classification
+
+Task 3 - AI agent knowledge base
+  TMDB 5000 Movie Dataset (tmdb_5000_movies.csv + tmdb_5000_credits.csv)
+  https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata
+  kagglehub id: tmdb/tmdb-movie-metadata
+
+Pre-trained models (downloaded from Hugging Face / Keras on first run)
+  MobileNetV2 ImageNet weights          (Task 1, transfer-learning extension)
+  sentence-transformers/all-MiniLM-L6-v2 (Tasks 2 and 3)
+  sentence-transformers/all-mpnet-base-v2 (Task 2)
